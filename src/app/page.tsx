@@ -14,8 +14,13 @@ export default function Home() {
         setError("");
         setShortUrl("");
 
+        let finalUrl = url; /* check if url has http or https, if it doesnt provide it, frontend*/
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            finalUrl = 'https://' + url;
+        }
+
         try {
-            new URL(url);
+            new URL(finalUrl);
         } catch {
             setError("Invalid URL format");
             return;
@@ -29,7 +34,7 @@ export default function Home() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ url, alias }),
+                body: JSON.stringify({ url: finalUrl, alias }),
             });
 
             const data = await res.json();

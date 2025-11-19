@@ -28,7 +28,12 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        if (!validUrl(url)) {
+        let finalUrl = url; /* prepend security protocol, backend  */
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            finalUrl = 'https://' + url;
+        }
+
+        if (!validUrl(finalUrl)) {
             return NextResponse.json(
                 { error: "Invalid URL" },
                 { status: 400 }
@@ -45,7 +50,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        await collection.insertOne({ alias, url }); /* if unique set it as the alias*/
+        await collection.insertOne({ alias, url: finalUrl }); /* if unique set it as the alias*/
         return NextResponse.json({
             message: 'Success',
             alias
